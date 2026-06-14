@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ingen tilkobling – Minio</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #202020;
+      color: #f9f9f9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 2rem;
+      text-align: center;
+    }
+    .icon {
+      width: 80px;
+      height: 80px;
+      border: 2px solid rgba(249,249,249,0.2);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .icon svg { width: 40px; height: 40px; stroke: #f9f9f9; }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      color: rgba(249,249,249,0.6);
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+      max-width: 320px;
+    }
+    button {
+      background: #f9f9f9;
+      color: #202020;
+      border: none;
+      padding: 0.875rem 2rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    button:active { opacity: 0.7; }
+    .logo {
+      margin-bottom: 1.5rem;
+    }
+    .logo svg { width: 160px; height: auto; }
+    .tagline {
+      font-size: 0.75rem;
+      color: rgba(249,249,249,0.4);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" fill="none">
+      <rect x="2" y="3" width="42" height="42" rx="11" stroke="#f9f9f9" stroke-width="2" fill="none"/>
+      <polyline points="11,36 18,12 23,30 28,12 35,36" stroke="#f9f9f9" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <text x="54" y="32" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif" font-weight="600" font-size="32" fill="#f9f9f9" letter-spacing="-0.5">Minio</text>
+      <text x="56" y="44" font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif" font-weight="300" font-size="9.5" fill="rgba(249,249,249,0.5)" letter-spacing="1.5">Etter dine mål</text>
+    </svg>
+  </div>
+
+  <div class="icon">
+    <svg viewBox="0 0 24 24" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/>
+    </svg>
+  </div>
+
+  <h1>Ingen tilkobling</h1>
+  <p>Sjekk internettforbindelsen din og prøv igjen.</p>
+
+  <button onclick="location.reload()">Prøv igjen</button>
+
+  <div class="tagline">Handlaget i Lillehammer</div>
+</body>
+</html>

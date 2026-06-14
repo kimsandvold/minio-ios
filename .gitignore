@@ -1,0 +1,5 @@
+node_modules/
+dist/
+capacitor-cordova-ios-plugins/
+Cordova.plugins.xcconfig
+.DS_Store
