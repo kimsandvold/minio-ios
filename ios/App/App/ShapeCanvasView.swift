@@ -6,17 +6,12 @@ struct ShapeCanvasView: View {
     var body: some View {
         Canvas { context, size in
             let rect = CGRect(origin: .zero, size: size)
-            let fillColor: Color = Color(.displayP3, red: 0.55, green: 0.35, blue: 0.15).opacity(0.35)
-            let strokeColor: Color = .brown
-
             let (path, _) = vm.shapePath(in: rect)
+            let bounds = path.boundingRect
 
-            context.fill(path, with: .color(fillColor))
-            context.stroke(path, with: .color(strokeColor), lineWidth: 2.5)
-
-            // Grid
+            // Rutenett
             var gridPath = Path()
-            let gridSize: CGFloat = 20
+            let gridSize: CGFloat = 22
             for x in stride(from: 0, through: size.width, by: gridSize) {
                 gridPath.move(to: CGPoint(x: x, y: 0))
                 gridPath.addLine(to: CGPoint(x: x, y: size.height))
@@ -25,37 +20,36 @@ struct ShapeCanvasView: View {
                 gridPath.move(to: CGPoint(x: 0, y: y))
                 gridPath.addLine(to: CGPoint(x: size.width, y: y))
             }
-            context.stroke(gridPath, with: .color(.brown.opacity(0.06)), lineWidth: 0.5)
+            context.stroke(gridPath, with: .color(.white.opacity(0.14)), lineWidth: 0.5)
 
-            // Dimension labels
-            let dims = dimensionLabels(in: size)
-            for (text, pos) in dims {
-                context.draw(Text(text).font(.caption2.weight(.medium)).foregroundColor(.brown), at: pos)
+            // Terrasseflate med tregradient
+            context.fill(
+                path,
+                with: .linearGradient(
+                    Theme.deck,
+                    startPoint: CGPoint(x: bounds.minX, y: bounds.minY),
+                    endPoint: CGPoint(x: bounds.maxX, y: bounds.maxY)
+                )
+            )
+            context.stroke(path, with: .color(.white.opacity(0.9)), lineWidth: 2.5)
+
+            // Målelabels
+            for (text, pos) in dimensionLabels(in: size) {
+                context.draw(
+                    Text(text).font(.caption2.weight(.bold)).foregroundColor(.white),
+                    at: pos
+                )
             }
         }
-        .frame(height: 220)
         .background {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.background.quaternary)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(.white.opacity(0.12))
         }
-        .clipShape(RoundedRectangle(cornerRadius: 20))
         .overlay {
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(.quaternary, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(.white.opacity(0.25), lineWidth: 1)
         }
-        .overlay(alignment: .topTrailing) {
-            Button {
-                vm.visRotert.toggle()
-            } label: {
-                Image(systemName: vm.visRotert ? "lock.rotation" : "lock.rotation.open")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(6)
-                    .background(.ultraThinMaterial, in: Circle())
-            }
-            .buttonStyle(.plain)
-            .padding(8)
-        }
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
     private func dimensionLabels(in size: CGSize) -> [(String, CGPoint)] {

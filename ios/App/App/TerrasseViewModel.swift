@@ -27,14 +27,15 @@ final class TerrasseViewModel {
     var bordavstand: Double = 5 { didSet { oppdaterResultat() } }
     var bjelkeavstand: Double = 600 { didSet { oppdaterResultat() } }
     var skruerPerKryss: Double = 2 { didSet { oppdaterResultat() } }
+    var bjelkeDimensjon: Bjelkedimensjon = .k48x148 { didSet { oppdaterResultat() } }
 
-    // MARK: - Priser
-    var prisBordPrLm: Double = 150 { didSet { oppdaterResultat() } }
-    var prisBjelkePrLm: Double = 200 { didSet { oppdaterResultat() } }
-    var prisSkrue: Double = 3 { didSet { oppdaterResultat() } }
-    var prisGjerdeBord: Double = 100 { didSet { oppdaterResultat() } }
-    var prisLekt: Double = 80 { didSet { oppdaterResultat() } }
-    var prisStolpe: Double = 250 { didSet { oppdaterResultat() } }
+    // MARK: - Priser (veiledende markedspris, NOK)
+    var prisBordPrLm: Double = 17 { didSet { oppdaterResultat() } }   // terrassebord kr/lm
+    var prisBjelkePrLm: Double = 55 { didSet { oppdaterResultat() } } // konstruksjonsvirke kr/lm
+    var prisSkrue: Double = 3 { didSet { oppdaterResultat() } }       // kr/stk
+    var prisGjerdeBord: Double = 17 { didSet { oppdaterResultat() } } // kr/stk
+    var prisLekt: Double = 14 { didSet { oppdaterResultat() } }       // lekt kr/lm
+    var prisStolpe: Double = 89 { didSet { oppdaterResultat() } }     // kr/stk
 
     // MARK: - Gjerde
     var gjerdeType: Gjerdetype = .ingen { didSet { oppdaterResultat() } }
@@ -85,6 +86,23 @@ final class TerrasseViewModel {
     func slettDesign(_ design: LagretDesign) {
         try? DesignArkiv.slett(design)
         oppdaterLagrede()
+    }
+
+    /// Nullstiller geometri og konfigurasjon til standard for et nytt prosjekt.
+    /// Priser beholdes slik at brukeren kan bekrefte dem i prisoppsettet.
+    func nyttProsjekt() {
+        valgtForm = .rektangel
+        lengde = 5.0; bredde = 3.0
+        hovedLengde = 5.0; hovedBredde = 3.0
+        fløyLengde = 2.5; fløyBredde = 2.0
+        ytreLengde = 6.0; ytreBredde = 4.0; armBredde = 1.0
+        ryggLengde = 5.0; flensDybde = 2.0; flensBredde = 0.5
+        bordbredde = 120; bordavstand = 5; bjelkeavstand = 600; skruerPerKryss = 2
+        gjerdeType = .ingen; gjerdeHøyde = 0.9; gjerdePåAlleSider = true; stolpeAvstand = 2.0
+        harTrapp = false; trappAntallTrinn = 3; trappBredde = 1.0
+        trappInntrinn = 0.30; trappOpptrinn = 0.18
+        visRotert = false
+        oppdaterResultat()
     }
 
     // MARK: - Arealberegning
@@ -199,9 +217,9 @@ final class TerrasseViewModel {
                 case .ingen: return 0
                 }
             }()
-            let lektAntall = lektRader * Int(ceil(gjerdeLengde / 2.0))
-            gjerdeFormattert = "\(gjerdeType.beskrivelse): \(gjerdeBordAntall ?? 0) bord, \(lektAntall) lekt, \(gjerdeStolper ?? 0) stolper"
-            gjerdeKostnad = (Double(gjerdeBordAntall ?? 0) * prisGjerdeBord) + (Double(lektAntall) * prisLekt) + (Double(gjerdeStolper ?? 0) * prisStolpe)
+            let lektLøpemeter = Double(lektRader) * gjerdeLengde
+            gjerdeFormattert = "\(gjerdeType.beskrivelse): \(gjerdeBordAntall ?? 0) bord, \(lektLøpemeter.formatertLm()) lm lekt, \(gjerdeStolper ?? 0) stolper"
+            gjerdeKostnad = (Double(gjerdeBordAntall ?? 0) * prisGjerdeBord) + (lektLøpemeter * prisLekt) + (Double(gjerdeStolper ?? 0) * prisStolpe)
         }
 
         // Trapp
@@ -228,7 +246,7 @@ final class TerrasseViewModel {
             bordKostnad: bordKostnad,
             bjelkeAntall: antallBjelker,
             bjelkeLøpemeter: bjelkeLøpemeter,
-            bjelkeFormattert: "\(antallBjelker) stk × \(Int(breddePåTvers * 1000))mm",
+            bjelkeFormattert: "\(antallBjelker) stk \(bjelkeDimensjon.rawValue) × \(Int(breddePåTvers * 1000))mm",
             bjelkeKostnad: bjelkeKostnad,
             skrueAntall: skrueAntall,
             skrueFormattert: "\(skrueAntall) stk \(Int(skruerPerKryss)) per kryss",
@@ -335,5 +353,9 @@ private extension Double {
 
     func formatertAreal() -> String {
         String(format: "%.2f", self)
+    }
+
+    func formatertLm() -> String {
+        String(format: "%.1f", self)
     }
 }

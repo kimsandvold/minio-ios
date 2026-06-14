@@ -18,10 +18,13 @@
 		AAAA00070000000000000007 /* MaleInnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00070000000000000007 /* MaleInnView.swift */; };
 		AAAA00080000000000000008 /* ShapeCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00080000000000000008 /* ShapeCanvasView.swift */; };
 		AAAA00090000000000000009 /* ResultatKortView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00090000000000000009 /* ResultatKortView.swift */; };
-		AAAA00100000000000000010 /* PDFForhandsvisningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00100000000000000010 /* PDFForhandsvisningView.swift */; };
 		AAAA00110000000000000011 /* PDFGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00110000000000000011 /* PDFGenerator.swift */; };
 		AAAA00120000000000000012 /* LagretDesign.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00120000000000000012 /* LagretDesign.swift */; };
 		AAAA00130000000000000013 /* DesignArkiv.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00130000000000000013 /* DesignArkiv.swift */; };
+		AAAA00140000000000000014 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00140000000000000014 /* Theme.swift */; };
+		AAAA00150000000000000015 /* HeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00150000000000000015 /* HeroView.swift */; };
+		AAAA00160000000000000016 /* PDFExportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00160000000000000016 /* PDFExportSheet.swift */; };
+		AAAA00170000000000000017 /* PrisoppsettSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00170000000000000017 /* PrisoppsettSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,10 +42,13 @@
 		BBBB00070000000000000007 /* MaleInnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaleInnView.swift; sourceTree = "<group>"; };
 		BBBB00080000000000000008 /* ShapeCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeCanvasView.swift; sourceTree = "<group>"; };
 		BBBB00090000000000000009 /* ResultatKortView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultatKortView.swift; sourceTree = "<group>"; };
-		BBBB00100000000000000010 /* PDFForhandsvisningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFForhandsvisningView.swift; sourceTree = "<group>"; };
 		BBBB00110000000000000011 /* PDFGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFGenerator.swift; sourceTree = "<group>"; };
 		BBBB00120000000000000012 /* LagretDesign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LagretDesign.swift; sourceTree = "<group>"; };
 		BBBB00130000000000000013 /* DesignArkiv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignArkiv.swift; sourceTree = "<group>"; };
+		BBBB00140000000000000014 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		BBBB00150000000000000015 /* HeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroView.swift; sourceTree = "<group>"; };
+		BBBB00160000000000000016 /* PDFExportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFExportSheet.swift; sourceTree = "<group>"; };
+		BBBB00170000000000000017 /* PrisoppsettSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrisoppsettSheet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,10 +90,13 @@
 				BBBB00070000000000000007 /* MaleInnView.swift */,
 				BBBB00080000000000000008 /* ShapeCanvasView.swift */,
 				BBBB00090000000000000009 /* ResultatKortView.swift */,
-				BBBB00100000000000000010 /* PDFForhandsvisningView.swift */,
 				BBBB00110000000000000011 /* PDFGenerator.swift */,
 				BBBB00120000000000000012 /* LagretDesign.swift */,
 				BBBB00130000000000000013 /* DesignArkiv.swift */,
+				BBBB00140000000000000014 /* Theme.swift */,
+				BBBB00150000000000000015 /* HeroView.swift */,
+				BBBB00160000000000000016 /* PDFExportSheet.swift */,
+				BBBB00170000000000000017 /* PrisoppsettSheet.swift */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
@@ -178,10 +187,13 @@
 				AAAA00070000000000000007 /* MaleInnView.swift in Sources */,
 				AAAA00080000000000000008 /* ShapeCanvasView.swift in Sources */,
 				AAAA00090000000000000009 /* ResultatKortView.swift in Sources */,
-				AAAA00100000000000000010 /* PDFForhandsvisningView.swift in Sources */,
 				AAAA00110000000000000011 /* PDFGenerator.swift in Sources */,
 				AAAA00120000000000000012 /* LagretDesign.swift in Sources */,
 				AAAA00130000000000000013 /* DesignArkiv.swift in Sources */,
+				AAAA00140000000000000014 /* Theme.swift in Sources */,
+				AAAA00150000000000000015 /* HeroView.swift in Sources */,
+				AAAA00160000000000000016 /* PDFExportSheet.swift in Sources */,
+				AAAA00170000000000000017 /* PrisoppsettSheet.swift in Sources */,
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -9,6 +9,33 @@ struct MaterialKonfigurasjon {
     var skruerPerKryss: Double = 2
 }
 
+/// Konstruksjonsvirke-dimensjoner med veiledende markedspris per løpemeter (NOK).
+enum Bjelkedimensjon: String, CaseIterable, Identifiable {
+    case k48x98 = "48×98"
+    case k48x148 = "48×148"
+    case k48x198 = "48×198"
+
+    var id: String { rawValue }
+
+    /// Veiledende pris i kr/lm.
+    var standardpris: Double {
+        switch self {
+        case .k48x98: return 40
+        case .k48x148: return 55
+        case .k48x198: return 65
+        }
+    }
+
+    /// Høyde i mm – brukes til bjelkelag-beskrivelse.
+    var høyde: Int {
+        switch self {
+        case .k48x98: return 98
+        case .k48x148: return 148
+        case .k48x198: return 198
+        }
+    }
+}
+
 enum Gjerdetype: String, CaseIterable, Identifiable {
     case ingen = "Ingen"
     case vannrett = "Vannrett"

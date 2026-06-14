@@ -23,6 +23,7 @@ struct LagretDesign: Codable, Identifiable {
     let bordavstand: Double
     let bjelkeavstand: Double
     let skruerPerKryss: Double
+    var bjelkeDimensjonRawValue: String?
 
     let prisBordPrLm: Double
     let prisBjelkePrLm: Double
@@ -67,6 +68,7 @@ struct LagretDesign: Codable, Identifiable {
         self.bordavstand = vm.bordavstand
         self.bjelkeavstand = vm.bjelkeavstand
         self.skruerPerKryss = vm.skruerPerKryss
+        self.bjelkeDimensjonRawValue = vm.bjelkeDimensjon.rawValue
 
         self.prisBordPrLm = vm.prisBordPrLm
         self.prisBjelkePrLm = vm.prisBjelkePrLm
@@ -108,6 +110,9 @@ struct LagretDesign: Codable, Identifiable {
         vm.bordavstand = bordavstand
         vm.bjelkeavstand = bjelkeavstand
         vm.skruerPerKryss = skruerPerKryss
+        if let dim = bjelkeDimensjonRawValue, let bd = Bjelkedimensjon(rawValue: dim) {
+            vm.bjelkeDimensjon = bd
+        }
 
         vm.prisBordPrLm = prisBordPrLm
         vm.prisBjelkePrLm = prisBjelkePrLm
