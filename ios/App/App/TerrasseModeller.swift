@@ -64,13 +64,32 @@ struct GjerdeConfig {
     var stolpeAvstand: Double = 2.0
 }
 
-struct TrappConfig {
-    var harTrapp: Bool = false
+/// Hvilken kant av terrassen noe plasseres på (sett ovenfra).
+enum Terrasseside: String, CaseIterable, Codable, Identifiable {
+    case front = "Front"
+    case bak = "Bak"
+    case venstre = "Venstre"
+    case høyre = "Høyre"
+
+    var id: String { rawValue }
+
+    var ikon: String {
+        switch self {
+        case .front: return "arrow.down.to.line"
+        case .bak: return "arrow.up.to.line"
+        case .venstre: return "arrow.left.to.line"
+        case .høyre: return "arrow.right.to.line"
+        }
+    }
+}
+
+/// En trapp plassert på en valgt kant av terrassen.
+struct Trapp: Identifiable, Codable, Equatable {
+    var id = UUID()
+    var side: Terrasseside = .front
+    var posisjon: Double = 0.5   // 0…1 langs kanten
+    var bredde: Double = 1.0     // meter
     var antallTrinn: Int = 3
-    var bredde: Double = 1.0
-    var inntrinn: Double = 0.30
-    var opptrinn: Double = 0.18
-    var medRekkverk: Bool = true
 }
 
 struct BeregnetResultat: Identifiable {

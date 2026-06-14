@@ -25,7 +25,7 @@ struct MaleInnView: View {
                 GjerdeConfigView(vm: vm)
             }
 
-            SectionCard(icon: "stairs", title: "Trapp / utgang", tint: .purple, initiallyExpanded: false) {
+            SectionCard(icon: "stairs", title: "Trapp / utgang", tint: .purple, subtitle: vm.trapper.isEmpty ? nil : "\(vm.trapper.count) trapp(er)", initiallyExpanded: false) {
                 TrappConfigView(vm: vm)
             }
         }
@@ -213,22 +213,119 @@ struct TrappConfigView: View {
     let vm: TerrasseViewModel
 
     var body: some View {
-        VStack(spacing: 12) {
-            Toggle(isOn: Binding(get: { vm.harTrapp }, set: { vm.harTrapp = $0 })) {
-                Text("Inkluder trapp")
-                    .font(.subheadline)
+        VStack(spacing: 14) {
+            if vm.trapper.isEmpty {
+                Text("Ingen trapper. Legg til en og velg hvilken kant den skal stå på.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            if vm.harTrapp {
-                ConfigRad(verdi: Binding(get: { vm.trappAntallTrinn }, set: { vm.trappAntallTrinn = $0 }),
-                          label: "Antall trinn", enhet: "", range: 1...20, step: 1)
-                ConfigRad(verdi: Binding(get: { vm.trappBredde }, set: { vm.trappBredde = $0 }),
-                          label: "Bredde", enhet: "m", range: 0.5...3.0, step: 0.1)
-                ConfigRad(verdi: Binding(get: { vm.trappInntrinn }, set: { vm.trappInntrinn = $0 }),
-                          label: "Inntrinn", enhet: "mm", range: 0.20...0.40, step: 0.01)
-                ConfigRad(verdi: Binding(get: { vm.trappOpptrinn }, set: { vm.trappOpptrinn = $0 }),
-                          label: "Opptrinn", enhet: "mm", range: 0.10...0.25, step: 0.01)
+            ForEach(vm.trapper) { trapp in
+                TrappRad(trapp: vm.bindingForTrapp(trapp)) {
+                    withAnimation { vm.fjernTrapp(trapp) }
+                }
             }
+
+            Button {
+                withAnimation { vm.leggTilTrapp() }
+            } label: {
+                Label("Legg til trapp", systemImage: "plus.circle.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+
+            if !vm.trapper.isEmpty {
+                Divider()
+                TrinnGeometriRad(label: "Inntrinn (dybde)", verdi: Binding(get: { vm.trappInntrinn }, set: { vm.trappInntrinn = $0 }), range: 0.20...0.40)
+                TrinnGeometriRad(label: "Opptrinn (høyde)", verdi: Binding(get: { vm.trappOpptrinn }, set: { vm.trappOpptrinn = $0 }), range: 0.10...0.25)
+            }
+        }
+    }
+}
+
+struct TrappRad: View {
+    @Binding var trapp: Trapp
+    let onDelete: () -> Void
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Picker("Kant", selection: $trapp.side) {
+                    ForEach(Terrasseside.allCases) { side in
+                        Text(side.rawValue).tag(side)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Button(role: .destructive, action: onDelete) {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.red)
+            }
+
+            VStack(spacing: 4) {
+                HStack {
+                    Text("Plassering langs kanten")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text(plasseringTekst)
+                        .font(.caption.weight(.semibold))
+                }
+                Slider(value: $trapp.posisjon, in: 0...1)
+                    .tint(Theme.accent)
+            }
+
+            HStack {
+                Text("Bredde").font(.subheadline)
+                Spacer()
+                Text("\(trapp.bredde, specifier: "%.1f") m")
+                    .font(.subheadline.weight(.semibold))
+                    .contentTransition(.numericText())
+                Stepper("", value: $trapp.bredde, in: 0.5...4.0, step: 0.1)
+                    .labelsHidden()
+            }
+
+            HStack {
+                Text("Antall trinn").font(.subheadline)
+                Spacer()
+                Text("\(trapp.antallTrinn)")
+                    .font(.subheadline.weight(.semibold))
+                    .contentTransition(.numericText())
+                Stepper("", value: $trapp.antallTrinn, in: 1...20)
+                    .labelsHidden()
+            }
+        }
+        .padding(12)
+        .background(.fill.quaternary, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    private var plasseringTekst: String {
+        switch trapp.posisjon {
+        case ..<0.34: return "Mot start"
+        case ..<0.67: return "Midt"
+        default: return "Mot slutt"
+        }
+    }
+}
+
+struct TrinnGeometriRad: View {
+    let label: String
+    @Binding var verdi: Double
+    let range: ClosedRange<Double>
+
+    var body: some View {
+        HStack {
+            Text(label).font(.subheadline)
+            Spacer()
+            Text("\(Int(verdi * 1000)) mm")
+                .font(.subheadline.weight(.semibold))
+                .contentTransition(.numericText())
+            Stepper("", value: $verdi, in: range, step: 0.01)
+                .labelsHidden()
         }
     }
 }

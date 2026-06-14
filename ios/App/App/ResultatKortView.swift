@@ -11,7 +11,7 @@ struct ResultatKortView: View {
             }
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                kort(ikon: "rectangle.split.2x2", tittel: "Terrassebord", verdi: "\(resultat.bordAntall) stk", sub: resultat.bordFormattert, color: .orange)
+                kort(ikon: "rectangle.split.2x2", tittel: "Terrassebord", verdi: String(format: "%.0f lm", resultat.bordLøpemeter), sub: resultat.bordFormattert, color: .orange)
                 kort(ikon: "rectangle.3.group", tittel: "Bjelker", verdi: "\(resultat.bjelkeAntall) stk", sub: resultat.bjelkeFormattert, color: .brown)
                 kort(ikon: "gearshape.2", tittel: "Skruer", verdi: "\(resultat.skrueAntall)", sub: resultat.skrueFormattert, color: .blue)
 

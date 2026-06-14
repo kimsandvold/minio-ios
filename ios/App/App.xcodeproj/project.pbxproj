@@ -25,6 +25,7 @@
 		AAAA00150000000000000015 /* HeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00150000000000000015 /* HeroView.swift */; };
 		AAAA00160000000000000016 /* PDFExportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00160000000000000016 /* PDFExportSheet.swift */; };
 		AAAA00170000000000000017 /* PrisoppsettSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00170000000000000017 /* PrisoppsettSheet.swift */; };
+		AAAA00180000000000000018 /* Model3DView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBBB00180000000000000018 /* Model3DView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		BBBB00150000000000000015 /* HeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroView.swift; sourceTree = "<group>"; };
 		BBBB00160000000000000016 /* PDFExportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFExportSheet.swift; sourceTree = "<group>"; };
 		BBBB00170000000000000017 /* PrisoppsettSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrisoppsettSheet.swift; sourceTree = "<group>"; };
+		BBBB00180000000000000018 /* Model3DView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model3DView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +99,7 @@
 				BBBB00150000000000000015 /* HeroView.swift */,
 				BBBB00160000000000000016 /* PDFExportSheet.swift */,
 				BBBB00170000000000000017 /* PrisoppsettSheet.swift */,
+				BBBB00180000000000000018 /* Model3DView.swift */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
@@ -194,6 +197,7 @@
 				AAAA00150000000000000015 /* HeroView.swift in Sources */,
 				AAAA00160000000000000016 /* PDFExportSheet.swift in Sources */,
 				AAAA00170000000000000017 /* PrisoppsettSheet.swift in Sources */,
+				AAAA00180000000000000018 /* Model3DView.swift in Sources */,
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -67,6 +67,22 @@ struct PDFGenerator {
                 y += 8
             }
 
+            // minio-logo øverst til høyre
+            let logoRect = CGRect(x: pageWidth - margin - 128, y: margin - 4, width: 128, height: 34)
+            let logoBg = UIBezierPath(roundedRect: logoRect, cornerRadius: 17)
+            UIColor(red: 0.14, green: 0.55, blue: 0.42, alpha: 1).setFill()
+            logoBg.fill()
+            let symCfg = UIImage.SymbolConfiguration(pointSize: 15, weight: .bold)
+            if let leaf = UIImage(systemName: "leaf.fill", withConfiguration: symCfg)?
+                .withTintColor(.white, renderingMode: .alwaysOriginal) {
+                leaf.draw(in: CGRect(x: logoRect.minX + 16, y: logoRect.midY - 9, width: 18, height: 18))
+            }
+            let logoAttr: [NSAttributedString.Key: Any] = [
+                .font: UIFont.boldSystemFont(ofSize: 16),
+                .foregroundColor: UIColor.white
+            ]
+            ("minio.no" as NSString).draw(at: CGPoint(x: logoRect.minX + 42, y: logoRect.midY - 10), withAttributes: logoAttr)
+
             // Tittel
             text("TerrassePlan", size: 24, bold: true)
             text("Materialberegning", size: 14, color: .secondaryLabel)
@@ -86,20 +102,21 @@ struct PDFGenerator {
             kvittekst("Totalt areal", resultat.arealFormattert)
             linje()
 
-            // Bord
+            // Bord (oppgitt i løpemeter)
+            let perBord = resultat.bordAntall > 0 ? resultat.bordLøpemeter / Double(resultat.bordAntall) : 0
             text("TERRASSEBORD", size: 13, bold: true, color: .systemBrown)
             y -= 4
-            kvittekst("Antall bord", "\(resultat.bordAntall) stk")
-            kvittekst("Total lengde", "\(String(format: "%.1f", resultat.bordLøpemeter)) lm")
+            kvittekst("Løpemeter totalt", "\(String(format: "%.1f", resultat.bordLøpemeter)) lm")
+            kvittekst("Bordlengde", "\(String(format: "%.1f", perBord)) m")
             kvittekst("Bordbredde", "\(Int(vm.bordbredde)) mm")
             kvittekst("Bordavstand", "\(Int(vm.bordavstand)) mm")
             linje()
 
-            // Bjelker
+            // Bjelker (oppgitt i løpemeter)
             text("BJELKELAG", size: 13, bold: true, color: .systemBrown)
             y -= 4
-            kvittekst("Antall bjelker", "\(resultat.bjelkeAntall) stk")
-            kvittekst("Total lengde", "\(String(format: "%.1f", resultat.bjelkeLøpemeter)) lm")
+            kvittekst("Dimensjon", vm.bjelkeDimensjon.rawValue)
+            kvittekst("Løpemeter totalt", "\(String(format: "%.1f", resultat.bjelkeLøpemeter)) lm")
             kvittekst("Bjelkeavstand", "\(Int(vm.bjelkeavstand)) mm")
             linje()
 
@@ -120,25 +137,26 @@ struct PDFGenerator {
                 linje()
             }
 
-            // Trapp
-            if vm.harTrapp, let t = resultat.trappFormattert {
-                text("TRAPP", size: 13, bold: true, color: .systemBrown)
+            // Trapper (kan være flere)
+            if !vm.trapper.isEmpty {
+                text("TRAPPER", size: 13, bold: true, color: .systemBrown)
                 y -= 4
-                kvittekst("Antall trinn", "\(Int(vm.trappAntallTrinn)) stk")
-                kvittekst("Bredde", "\(String(format: "%.2f", vm.trappBredde)) m")
+                for (i, trapp) in vm.trapper.enumerated() {
+                    kvittekst("Trapp \(i + 1)", "\(trapp.side.rawValue) · \(trapp.antallTrinn) trinn · \(String(format: "%.1f", trapp.bredde)) m")
+                }
                 kvittekst("Inntrinn", "\(String(format: "%.0f", vm.trappInntrinn * 1000)) mm")
                 kvittekst("Opptrinn", "\(String(format: "%.0f", vm.trappOpptrinn * 1000)) mm")
                 linje()
             }
 
-            // Kostnadsoversikt
-            text("KOSTNADSOVERSIKT", size: 13, bold: true, color: .systemGreen)
+            // Estimert kostnader
+            text("Estimert kostnader", size: 13, bold: true, color: .systemGreen)
             y -= 4
             kostlinje("Terrassebord", resultat.bordKostnad)
             kostlinje("Bjelkelag", resultat.bjelkeKostnad)
             kostlinje("Skruer", resultat.skrueKostnad)
             if let g = resultat.gjerdeKostnad { kostlinje("Gjerde", g) }
-            if let t = resultat.trappKostnad { kostlinje("Trapp", t) }
+            if let t = resultat.trappKostnad { kostlinje("Trapper", t) }
             linje()
             kostlinje("TOTAL KOSTNAD", resultat.totalKostnad)
 

@@ -3,6 +3,7 @@ import SwiftUI
 /// Iøynefallende toppkort som viser terrasseformen og live areal.
 struct HeroView: View {
     let vm: TerrasseViewModel
+    var onVis3D: () -> Void = {}
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -18,7 +19,7 @@ struct HeroView: View {
                 Spacer()
                 Button {
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                        vm.visRotert.toggle()
+                        vm.roterVisning()
                     }
                 } label: {
                     Image(systemName: "rotate.right")
@@ -36,10 +37,20 @@ struct HeroView: View {
             HStack(spacing: 10) {
                 StatBadge(icon: "square.dashed", label: "Areal", value: vm.resultat?.arealFormattert ?? "–")
                 if let r = vm.resultat {
-                    StatBadge(icon: "rectangle.split.2x2", label: "Terrassebord", value: "\(r.bordAntall) stk")
+                    StatBadge(icon: "rectangle.split.2x2", label: "Terrassebord", value: String(format: "%.0f lm", r.bordLøpemeter))
                 }
                 Spacer()
             }
+
+            Button(action: onVis3D) {
+                Label("Se i 3D-modell", systemImage: "cube.transparent")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Theme.accentDeep)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 11)
+                    .background(.white, in: Capsule())
+            }
+            .buttonStyle(.plain)
         }
         .padding(18)
         .background(Theme.hero, in: RoundedRectangle(cornerRadius: 26, style: .continuous))

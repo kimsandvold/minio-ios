@@ -37,13 +37,11 @@ struct LagretDesign: Codable, Identifiable {
     let gjerdePaAlleSider: Bool
     let stolpeAvstand: Double
 
-    let harTrapp: Bool
-    let trappAntallTrinn: Double
-    let trappBredde: Double
+    var trapper: [Trapp]?
     let trappInntrinn: Double
     let trappOpptrinn: Double
 
-    let visRotert: Bool
+    var rotasjon: Int?
 
     @MainActor init(vm: TerrasseViewModel, navn: String) {
         self.id = UUID()
@@ -82,13 +80,11 @@ struct LagretDesign: Codable, Identifiable {
         self.gjerdePaAlleSider = vm.gjerdePåAlleSider
         self.stolpeAvstand = vm.stolpeAvstand
 
-        self.harTrapp = vm.harTrapp
-        self.trappAntallTrinn = vm.trappAntallTrinn
-        self.trappBredde = vm.trappBredde
+        self.trapper = vm.trapper
         self.trappInntrinn = vm.trappInntrinn
         self.trappOpptrinn = vm.trappOpptrinn
 
-        self.visRotert = vm.visRotert
+        self.rotasjon = vm.rotasjon
     }
 
     @MainActor func gjenopprett(vm: TerrasseViewModel) {
@@ -126,12 +122,10 @@ struct LagretDesign: Codable, Identifiable {
         vm.gjerdePåAlleSider = gjerdePaAlleSider
         vm.stolpeAvstand = stolpeAvstand
 
-        vm.harTrapp = harTrapp
-        vm.trappAntallTrinn = trappAntallTrinn
-        vm.trappBredde = trappBredde
+        vm.trapper = trapper ?? []
         vm.trappInntrinn = trappInntrinn
         vm.trappOpptrinn = trappOpptrinn
 
-        vm.visRotert = visRotert
+        vm.rotasjon = rotasjon ?? 0
     }
 }

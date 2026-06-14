@@ -43,18 +43,42 @@ final class TerrasseViewModel {
     var gjerdePåAlleSider: Bool = true { didSet { oppdaterResultat() } }
     var stolpeAvstand: Double = 2.0 { didSet { oppdaterResultat() } }
 
-    // MARK: - Trapp
-    var harTrapp: Bool = false { didSet { oppdaterResultat() } }
-    var trappAntallTrinn: Double = 3 { didSet { oppdaterResultat() } }
-    var trappBredde: Double = 1.0 { didSet { oppdaterResultat() } }
+    // MARK: - Trapp (kan ha flere, plassert på valgt kant)
+    var trapper: [Trapp] = [] { didSet { oppdaterResultat() } }
     var trappInntrinn: Double = 0.30 { didSet { oppdaterResultat() } }
     var trappOpptrinn: Double = 0.18 { didSet { oppdaterResultat() } }
+
+    var harTrapp: Bool { !trapper.isEmpty }
+
+    func leggTilTrapp() {
+        trapper.append(Trapp())
+    }
+
+    func fjernTrapp(_ trapp: Trapp) {
+        trapper.removeAll { $0.id == trapp.id }
+    }
+
+    func bindingForTrapp(_ trapp: Trapp) -> Binding<Trapp> {
+        Binding(
+            get: { self.trapper.first(where: { $0.id == trapp.id }) ?? trapp },
+            set: { ny in
+                if let i = self.trapper.firstIndex(where: { $0.id == ny.id }) {
+                    self.trapper[i] = ny
+                }
+            }
+        )
+    }
 
     // MARK: - Resultat
     private(set) var resultat: BeregnetResultat?
 
     // MARK: - Visning
-    var visRotert: Bool = false
+    /// Rotasjon av topp-ned-visningen: 0, 1, 2, 3 → 0°, 90°, 180°, 270°.
+    var rotasjon: Int = 0
+
+    func roterVisning() {
+        rotasjon = (rotasjon + 1) % 4
+    }
 
     // MARK: - Lagring
     private(set) var lagredeDesign: [LagretDesign] = []
@@ -99,9 +123,8 @@ final class TerrasseViewModel {
         ryggLengde = 5.0; flensDybde = 2.0; flensBredde = 0.5
         bordbredde = 120; bordavstand = 5; bjelkeavstand = 600; skruerPerKryss = 2
         gjerdeType = .ingen; gjerdeHøyde = 0.9; gjerdePåAlleSider = true; stolpeAvstand = 2.0
-        harTrapp = false; trappAntallTrinn = 3; trappBredde = 1.0
-        trappInntrinn = 0.30; trappOpptrinn = 0.18
-        visRotert = false
+        trapper = []; trappInntrinn = 0.30; trappOpptrinn = 0.18
+        rotasjon = 0
         oppdaterResultat()
     }
 
@@ -228,11 +251,16 @@ final class TerrasseViewModel {
         var trappFormattert: String?
         var trappKostnad: Double?
 
-        if harTrapp {
-            trappTrinnAntall = Int(trappAntallTrinn)
-            trappVanger = 3
-            trappFormattert = "\(Int(trappAntallTrinn)) trinn, \(trappBredde.format())m bredde"
-            trappKostnad = Double(trappTrinnAntall ?? 0) * 500
+        if !trapper.isEmpty {
+            let totalTrinn = trapper.reduce(0) { $0 + $1.antallTrinn }
+            trappTrinnAntall = totalTrinn
+            trappVanger = trapper.count * 3
+            if trapper.count == 1, let t = trapper.first {
+                trappFormattert = "\(t.antallTrinn) trinn, \(t.bredde.format())m bredde (\(t.side.rawValue.lowercased()))"
+            } else {
+                trappFormattert = "\(trapper.count) trapper, \(totalTrinn) trinn totalt"
+            }
+            trappKostnad = Double(totalTrinn) * 500
         }
 
         let totalKostnad = bordKostnad + bjelkeKostnad + skrueKostnad + (gjerdeKostnad ?? 0) + (trappKostnad ?? 0)
@@ -263,27 +291,11 @@ final class TerrasseViewModel {
         )
     }
 
-    // MARK: - Canvas-data
+    // MARK: - Geometri
 
-    func shapePath(in rect: CGRect) -> (Path, CGSize) {
-        let dimensions = normalizedDimensions()
-        let (drawW, drawH) = visRotert ? (dimensions.height, dimensions.width) : (dimensions.width, dimensions.height)
-        let scale = min(
-            (rect.width - 40) / max(drawW, 0.01),
-            (rect.height - 40) / max(drawH, 0.01)
-        )
-        let scaledW = drawW * scale
-        let scaledH = drawH * scale
-        let xOff = rect.minX + (rect.width - scaledW) / 2
-        let yOff = rect.minY + (rect.height - scaledH) / 2
-
-        var t = CGAffineTransform(translationX: xOff, y: yOff).scaledBy(x: scale, y: scale)
-        if visRotert {
-            let cx = dimensions.width / 2
-            let cy = dimensions.height / 2
-            t = t.translatedBy(x: cx, y: cy).rotated(by: -.pi / 2).translatedBy(x: -cx, y: -cy)
-        }
-
+    /// Terrasseformen i modellkoordinater (meter), uten visningstransform.
+    /// Returnerer også modellstørrelsen (bredde × lengde).
+    func modellPath() -> (Path, CGSize) {
         var path = Path()
 
         switch valgtForm {
@@ -329,10 +341,104 @@ final class TerrasseViewModel {
             }
         }
 
-        return (path.applying(t), CGSize(width: scaledW, height: scaledH))
+        return (path, normalizedDimensions())
     }
 
-    private func normalizedDimensions() -> CGSize {
+    /// Transform som plasserer modell-`bounds` sentrert i `rect`, med evt. rotasjon.
+    func sceneTransform(fitting bounds: CGRect, in rect: CGRect, margin: CGFloat = 30) -> CGAffineTransform {
+        let odd = rotasjon % 2 != 0
+        let bw = odd ? bounds.height : bounds.width
+        let bh = odd ? bounds.width : bounds.height
+        let scale = min(
+            (rect.width - margin) / max(bw, 0.01),
+            (rect.height - margin) / max(bh, 0.01)
+        )
+        let scaledW = bw * scale
+        let scaledH = bh * scale
+        let targetCX = rect.minX + (rect.width - scaledW) / 2 + scaledW / 2
+        let targetCY = rect.minY + (rect.height - scaledH) / 2 + scaledH / 2
+
+        var t = CGAffineTransform(translationX: targetCX, y: targetCY)
+        t = t.scaledBy(x: scale, y: scale)
+        if rotasjon != 0 { t = t.rotated(by: Double(rotasjon) * (.pi / 2)) }
+        t = t.translatedBy(x: -bounds.midX, y: -bounds.midY)
+        return t
+    }
+
+    /// Modell-bounds som omfatter terrassen og alle trapper.
+    func sceneBounds() -> CGRect {
+        let m = normalizedDimensions()
+        var bounds = CGRect(x: 0, y: 0, width: m.width, height: m.height)
+        for trapp in trapper {
+            bounds = bounds.union(trappRektModell(trapp, modelSize: m))
+        }
+        return bounds.insetBy(dx: -0.2, dy: -0.2)
+    }
+
+    /// Ferdig transformert form + transform + modellstørrelse for tegning.
+    func konstruksjon(in rect: CGRect) -> (shape: Path, transform: CGAffineTransform, modelSize: CGSize) {
+        let (path, modelSize) = modellPath()
+        let t = sceneTransform(fitting: sceneBounds(), in: rect)
+        return (path.applying(t), t, modelSize)
+    }
+
+    func shapePath(in rect: CGRect) -> (Path, CGSize) {
+        let k = konstruksjon(in: rect)
+        return (k.shape, k.modelSize)
+    }
+
+    /// Terrasseformen dekomponert til aksejusterte rektangler (modellkoordinater).
+    /// Brukes til robust 3D-bygging for alle former.
+    func modellRekter() -> [CGRect] {
+        switch valgtForm {
+        case .rektangel:
+            return [CGRect(x: 0, y: 0, width: bredde, height: lengde)]
+        case .lForm:
+            return [
+                CGRect(x: 0, y: 0, width: hovedBredde, height: hovedLengde),
+                CGRect(x: hovedBredde, y: hovedLengde - fløyLengde, width: fløyBredde, height: fløyLengde)
+            ]
+        case .uForm:
+            let w = ytreBredde, h = ytreLengde, a = armBredde
+            return [
+                CGRect(x: 0, y: 0, width: w, height: a),
+                CGRect(x: 0, y: a, width: a, height: h - a),
+                CGRect(x: w - a, y: a, width: a, height: h - a)
+            ]
+        case .eForm:
+            let rl = ryggLengde, fd = flensDybde, fb = flensBredde
+            let spacing = (rl - 3 * fb) / 2
+            var r = [CGRect(x: 0, y: 0, width: fd, height: rl)]
+            for i in 0..<3 {
+                r.append(CGRect(x: fd, y: CGFloat(i) * (fb + spacing), width: fd, height: fb))
+            }
+            return r
+        }
+    }
+
+    /// Trappens fotavtrykk i modellkoordinater (rektangel utenfor terrassekanten).
+    func trappRektModell(_ trapp: Trapp, modelSize: CGSize) -> CGRect {
+        let dybde = max(0.1, Double(trapp.antallTrinn) * trappInntrinn)
+        let w = modelSize.width
+        let h = modelSize.height
+        let p = min(max(trapp.posisjon, 0), 1)
+        switch trapp.side {
+        case .front:
+            let x = (w - trapp.bredde) * p
+            return CGRect(x: x, y: h, width: trapp.bredde, height: dybde)
+        case .bak:
+            let x = (w - trapp.bredde) * p
+            return CGRect(x: x, y: -dybde, width: trapp.bredde, height: dybde)
+        case .venstre:
+            let y = (h - trapp.bredde) * p
+            return CGRect(x: -dybde, y: y, width: dybde, height: trapp.bredde)
+        case .høyre:
+            let y = (h - trapp.bredde) * p
+            return CGRect(x: w, y: y, width: dybde, height: trapp.bredde)
+        }
+    }
+
+    func normalizedDimensions() -> CGSize {
         switch valgtForm {
         case .rektangel:
             return CGSize(width: bredde, height: lengde)

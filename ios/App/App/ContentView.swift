@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var vm = TerrasseViewModel()
     @State private var visPDF = false
+    @State private var vis3D = false
     @State private var visPrisoppsett = false
     @AppStorage("harSettPrisoppsett") private var harSettPrisoppsett = false
 
@@ -12,7 +13,7 @@ struct ContentView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 18) {
-                    HeroView(vm: vm)
+                    HeroView(vm: vm) { vis3D = true }
                     ShapeSelectorView(valgtForm: $vm.valgtForm)
                     MaleInnView(vm: vm)
 
@@ -85,6 +86,9 @@ struct ContentView: View {
             .sheet(isPresented: $vm.visLasting) { lastInnArk }
             .sheet(isPresented: $visPDF) {
                 PDFExportSheet(vm: vm)
+            }
+            .fullScreenCover(isPresented: $vis3D) {
+                Model3DView(vm: vm)
             }
             .sheet(isPresented: $visPrisoppsett) {
                 PrisoppsettSheet(vm: vm)
